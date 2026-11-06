@@ -4,14 +4,14 @@
       "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml",
       "selection": {
         "end": {
-          "column": 36,
-          "index": 449,
-          "line": 10
+          "column": 48,
+          "index": 719,
+          "line": 17
         },
         "start": {
-          "column": 36,
-          "index": 449,
-          "line": 10
+          "column": 48,
+          "index": 719,
+          "line": 17
         }
       }
     },
@@ -76,5 +76,5 @@
       }
     }
   ],
-  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/kotlin/com/xthan/fronts/MainActivity.kt"
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/assets/index.html"
 }
