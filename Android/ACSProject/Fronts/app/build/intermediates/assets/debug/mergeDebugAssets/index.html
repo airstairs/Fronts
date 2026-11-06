@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fronts</title>
+  <style>
+    /* CSS Reset & Variables - Leuchtturm 1917 Notebook Style (White Body, Dot Grid, Dark Black Headers/Surfaces, Creme Tones, Slightest Pink Accents) */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-main: #ffffff; /* White body */
+      --bg-surface: #141414; /* Dark black notebook surface / cards */
+      --bg-surface-hover: #222222;
+      --bg-darker: #0a0a0a;
+      --border-color: #333333;
+      --border-light: rgba(255, 255, 255, 0.12);
+      --text-main: #f5f5f3; /* Creme-toned white text on dark surfaces */
+      --text-muted: #b5b5b0; /* Creme-muted text */
+      --text-dim: #858580; /* Creme-dim text */
+      --accent: #2b2b2b;
+      --accent-hover: #3d3d3d;
+      --accent-light: rgba(255, 255, 255, 0.08);
+      --gold: #ebd2d4; /* The ever so slightest pink replacing gold */
+      --gold-light: rgba(235, 210, 212, 0.15);
+      --danger: #d9534f;
+      --danger-hover: #c9302c;
+      --radius-lg: 0.5rem;
+      --radius-md: 0.375rem;
+      --radius-sm: 0.25rem;
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+      background-image: radial-gradient(circle, #cccccc 1.2px, transparent 1.2px);
+      background-size: 22px 22px;
+    }
+
+    /* Utility Classes */
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-1 { gap: 0.25rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Header Bar */
+    header {
+      background-color: rgba(15, 15, 15, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      color: #fff;
+      background-color: var(--bg-surface-hover);
+      border-color: #555;
+    }
+
+    .badge {
+      background-color: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-color);
+    }
+
+    .badge-main {
+      background-color: var(--gold);
+      color: #111111;
+      font-weight: 800;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .header-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+      color: #f5f5f3;
+    }
+
+    .header-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+    @media (max-width: 768px) {
+      .header-subtitle { display: none; }
+    }
+
+    /* Slide-out Drawer Overlay & Drawer */
+    #drawerOverlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #drawerOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    aside#drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 320px;
+      max-width: 85vw;
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      z-index: 40;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    aside#drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-pulse {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background-color: var(--gold);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .drawer-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .drawer-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border-color);
+      background-color: rgba(15, 15, 15, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Main Content Container */
+    main {
+      flex: 1;
+      padding: 1rem;
+      max-width: 72rem;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      main { padding: 2rem; }
+    }
+
+    /* Buttons & Inputs */
+    .btn-primary {
+      background-color: #2b2b2b;
+      color: #f5f5f3;
+      font-weight: 500;
+      padding: 0.625rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-md);
+    }
+    .btn-primary:hover {
+      background-color: #3d3d3d;
+      border-color: #555;
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-gold {
+      background-color: var(--gold);
+      color: #111111;
+      font-weight: 600;
+      padding: 0.625rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(235, 210, 212, 0.4);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-md);
+    }
+    .btn-gold:hover {
+      background-color: #d8bebf;
+      color: #000;
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-surface-hover);
+      color: #f5f5f3;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background-color: #333;
+      border-color: #555;
+    }
+
+    .btn-danger-text {
+      background: transparent;
+      border: none;
+      color: #d9534f;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-danger-text:hover {
+      color: #ff6b6b;
+      background-color: rgba(217, 83, 79, 0.15);
+    }
+
+    .input-field {
+      width: 100%;
+      background-color: var(--bg-darker);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .input-field::placeholder {
+      color: #858580;
+    }
+    .input-field:focus {
+      border-color: var(--gold);
+    }
+
+    /* Welcome / Overview Card */
+    .welcome-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      max-width: 38rem;
+      margin: 0 auto;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s ease;
+    }
+    @media (min-width: 768px) {
+      .welcome-card { padding: 2rem; }
+    }
+
+    /* Grids */
+    .grid-bags {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding-top: 1rem;
+    }
+    @media (min-width: 640px) {
+      .grid-bags { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .grid-bags { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .grid-items {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .grid-items { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .grid-items { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* Bag Card & Item Card Styles */
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .card:hover {
+      border-color: rgba(235, 210, 212, 0.4);
+      background-color: #1a1a1a;
+    }
+
+    .card.is-main-bag {
+      border-color: rgba(235, 210, 212, 0.6);
+      box-shadow: var(--shadow-md), 0 0 15px rgba(235, 210, 212, 0.08);
+    }
+
+    .thumbnail {
+      width: 4rem;
+      height: 4rem;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-darker);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .thumbnail .thumbnail-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      padding: 0.125rem;
+    }
+    .thumbnail:hover .thumbnail-overlay {
+      opacity: 1;
+    }
+
+    /* Active Bag Header Banner */
+    .bag-detail-banner {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: var(--shadow-md);
+    }
+    @media (min-width: 768px) {
+      .bag-detail-banner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+      }
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-backdrop.hidden {
+      display: none !important;
+    }
+
+    .modal-box {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 28rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    /* Drawing Canvas Specifics */
+    .drawing-canvas {
+      touch-action: none;
+      cursor: crosshair;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-darker);
+    }
+
+    /* Toast Notifications */
+    #toast {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 50;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(5rem);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .star-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-dim);
+      padding: 0.25rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    .star-btn:hover, .star-btn.active {
+      color: var(--gold);
+      transform: scale(1.1);
+    }
+
+    /* Utility helper spacing */
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2 > * + * { margin-top: 0.5rem; }
+    .space-y-1-5 > * + * { margin-top: 0.375rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Header Bar -->
+  <header>
+    <div class="header-left">
+      <button id="hamburgerBtn" onclick="toggleDrawer()" class="icon-btn" title="Open Bags Drawer">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <button id="backToBagsBtn" onclick="closeBagView()" class="hidden icon-btn" style="width: auto; padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 500; gap: 0.25rem;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Bags
+      </button>
+
+      <div class="flex items-center gap-2">
+        <span class="badge">fronts</span>
+        <h1 id="headerTitle" class="header-title">Bags</h1>
+      </div>
+    </div>
+
+    <div id="headerSubtitle" class="header-subtitle">
+      &lt;3
+    </div>
+  </header>
+
+  <!-- Slide-out Drawer Overlay & Drawer -->
+  <div id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+
+  <aside id="drawer">
+    <div class="drawer-header">
+      <div class="flex items-center gap-2">
+        <div class="drawer-pulse"></div>
+        <h2 style="font-weight: 700; font-size: 1.125rem; color: #fff;">Bags</h2>
+      </div>
+      <button onclick="toggleDrawer(false)" class="icon-btn" style="padding: 0.375rem;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="drawerBagsList" class="drawer-list"></div>
+
+    <div class="drawer-footer">
+      <button onclick="promptCreateBag()" class="btn-primary" style="width: 100%; padding: 0.625rem;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add New Bag
+      </button>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; padding-top: 0.25rem;">
+        <button onclick="exportBags()" class="btn-secondary">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Export (.mybags)
+        </button>
+        <button onclick="triggerImport()" class="btn-secondary">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          Import
+        </button>
+      </div>
+
+      <button onclick="deleteAllData()" class="btn-danger-text">
+        Reset & Clear All Data
+      </button>
+
+      <input type="file" id="importFileInput" accept="application/json,.mybags,.json,*/*" class="hidden" onchange="handleImportFile(event)">
+    </div>
+  </aside>
+
+  <!-- Main Content Container -->
+  <main>
+    <!-- View 1: Welcome / Bag Overview View -->
+    <section id="bagsOverviewSection" class="space-y-6">
+      <!-- Dynamic Welcome Card -->
+      <div class="welcome-card" id="welcomeCard">
+        <h2 id="welcomeTitle" style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Welcome to fronts</h2>
+        <p id="welcomeDescription" style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.5;">
+          Organize everything based on the bag it goes in.
+        </p>
+        <div id="welcomeActionArea" class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Grid of Bags -->
+      <div id="bagsGrid" class="grid-bags"></div>
+    </section>
+
+    <!-- View 2: Bag Items Detail View -->
+    <section id="bagDetailSection" class="hidden space-y-6">
+      <div class="bag-detail-banner">
+        <div class="flex items-center gap-4">
+          <div onclick="promptChangeThumbnail('bag', activeBagId)" class="thumbnail" title="Click to change bag thumbnail">
+            <div id="activeBagThumbnailContainer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+            <div class="thumbnail-overlay">Change</div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span style="font-size: 0.75rem; color: var(--gold); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Bag View</span>
+              <span id="activeBagMainBadge" class="badge-main hidden">★ MAIN BAG</span>
+            </div>
+            <h2 id="activeBagName" style="font-size: 1.25rem; font-weight: 700; color: #fff;">Bag Name</h2>
+            <p id="activeBagItemCount" style="font-size: 0.75rem; color: var(--text-muted);">0 items inside</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="setMainBagDetailBtn" onclick="toggleMainBag(activeBagId)" class="btn-secondary" style="border-color: var(--gold); color: var(--gold);">
+            ★ Set as Main
+          </button>
+          <button onclick="promptAddItem()" class="btn-primary" style="font-size: 0.875rem; padding: 0.625rem 1rem;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Item
+          </button>
+          <button onclick="deleteCurrentBag()" class="icon-btn" style="color: #d9534f; border: 1px solid rgba(217, 83, 79, 0.4);" title="Delete Bag">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="itemsGrid" class="grid-items"></div>
+    </section>
+  </main>
+
+  <!-- MODAL: Main Bag Selection Selector -->
+  <div id="selectMainBagModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-weight: 700; font-size: 1.125rem; color: #fff;">Select Main Bag</h3>
+        <button onclick="closeModal('selectMainBagModal')" class="icon-btn" style="padding: 0.25rem;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">Choose your primary prioritized bag for quick access at the top of your dashboard:</p>
+      
+      <div id="mainBagSelectorList" class="space-y-2" style="max-height: 18rem; overflow-y: auto; padding-right: 0.25rem;"></div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; padding-top: 0.5rem;">
+        <button onclick="closeModal('selectMainBagModal')" class="btn-secondary" style="padding: 0.5rem 1rem;">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Creation / Icon Choice Modal -->
+  <div id="choiceModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="choiceModalTitle" style="font-weight: 700; font-size: 1.125rem; color: #fff;">Select Icon Mode</h3>
+        <button onclick="closeModal('choiceModal')" class="icon-btn" style="padding: 0.25rem;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="nameInputWrapper" class="space-y-2">
+        <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Title / Name</label>
+        <input type="text" id="creationNameInput" placeholder="e.g., Tech Backpack, USB Hub..." class="input-field">
+      </div>
+
+      <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">How would you like to represent this visual icon?</p>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+        <button onclick="selectChoiceOption('camera')" class="btn-secondary" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: auto; font-size: 0.75rem;">
+          <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--accent-light); color: var(--gold); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <circle cx="12" cy="13" r="3" stroke-width="2"/>
+            </svg>
+          </div>
+          <span style="font-weight: 600; color: #f5f5f3;">Take/Pick Photo</span>
+        </button>
+
+        <button onclick="selectChoiceOption('draw')" class="btn-secondary" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: auto; font-size: 0.75rem;">
+          <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--accent-light); color: var(--gold); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+          </div>
+          <span style="font-weight: 600; color: #f5f5f3;">Draw Doodle</span>
+        </button>
+      </div>
+
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImagePick(event)">
+    </div>
+  </div>
+
+  <!-- MODAL: Canvas Drawing Drawer -->
+  <div id="doodleModal" class="modal-backdrop hidden">
+    <div class="modal-box" style="max-width: 32rem;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-weight: 700; font-size: 1.125rem; color: #fff;">Draw Doodle</h3>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">Canvas drawer without undo (reset available)</p>
+        </div>
+        <button onclick="closeModal('doodleModal')" class="icon-btn" style="padding: 0.25rem;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div style="position: relative; background-color: var(--bg-darker); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; max-height: 20rem;">
+        <canvas id="doodleCanvas" width="300" height="300" class="drawing-canvas"></canvas>
+      </div>
+
+      <div class="space-y-2">
+        <label style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Color Palette</label>
+        <div id="paletteContainer" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between;"></div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; background-color: rgba(20, 20, 20, 0.8); padding: 0.625rem 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <span style="font-size: 0.75rem; font-weight: 600; color: #f5f5f3;">Stroke Size</span>
+        <input type="range" id="brushSize" min="2" max="24" value="6" style="width: 12rem; accent-color: var(--gold); cursor: pointer;">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; gap: 0.75rem; padding-top: 0.5rem;">
+        <button onclick="resetCanvas()" class="btn-secondary" style="padding: 0.5rem 1rem;">
+          Reset Canvas
+        </button>
+        <button onclick="saveCanvasDrawing()" class="btn-primary" style="padding: 0.5rem 1.5rem; font-size: 0.875rem;">
+          Save & Use Visual
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Custom Attribute Modal -->
+  <div id="attributeModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-weight: 700; font-size: 1.125rem; color: #fff;">Add Custom Attribute</h3>
+        <button onclick="closeModal('attributeModal')" class="icon-btn" style="padding: 0.25rem;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">Key Name</label>
+          <input type="text" id="attrKeyInput" placeholder="e.g. Serial #, Weight, Condition" class="input-field">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">Attribute Value</label>
+          <input type="text" id="attrValInput" placeholder="e.g. SN-884920, 1.2 kg, Mint" class="input-field">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; padding-top: 0.5rem;">
+        <button onclick="closeModal('attributeModal')" class="btn-secondary" style="padding: 0.5rem 1rem;">Cancel</button>
+        <button onclick="saveAttribute()" class="btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">Add Attribute</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast">
+    <div id="toastIcon"></div>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <!-- MAIN SCRIPT LOGIC -->
+  <script>
+    const STORAGE_KEY = 'fronts_bags_data_v1';
+    let appData = { bags: [], mainBagId: null };
+    
+    let activeBagId = null;
+    let pendingCreationMode = null;
+    let pendingThumbnailChange = null;
+    let targetItemIdForAttr = null;
+
+    const PALETTE_COLORS = [
+      '#D9534F', '#EBD2D4', '#2B2B2B', '#0A0A0A', '#5CB85C',
+      '#F0AD4E', '#FFFFFF', '#858580', '#333333', '#A855F7'
+    ];
+    let currentColor = PALETTE_COLORS[0];
+
+    let canvas, ctx;
+    let isDrawing = false;
+
+    window.addEventListener('load', () => {
+      loadState();
+      initCanvas();
+      renderPalette();
+      renderAppView();
+    });
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (e) {
+        showToast('Storage space exceeded or unavailable.', 'error');
+      }
+    }
+
+    function loadState() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          appData = JSON.parse(stored);
+          if (!appData.bags) appData.bags = [];
+          if (appData.mainBagId === undefined) appData.mainBagId = null;
+        } catch (e) {
+          appData = { bags: [], mainBagId: null };
+        }
+      }
+    }
+
+    function toggleDrawer(forceState) {
+      if (activeBagId !== null && forceState !== false) return;
+
+      const drawer = document.getElementById('drawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const isOpen = drawer.classList.contains('open');
+      const shouldOpen = forceState !== undefined ? forceState : !isOpen;
+
+      if (shouldOpen) {
+        drawer.classList.add('open');
+        overlay.classList.add('active');
+      } else {
+        drawer.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+    }
+
+    /* Primary View Rendering */
+    function renderAppView() {
+      const overviewSection = document.getElementById('bagsOverviewSection');
+      const detailSection = document.getElementById('bagDetailSection');
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const backToBagsBtn = document.getElementById('backToBagsBtn');
+      const headerTitle = document.getElementById('headerTitle');
+
+      renderDrawerBagsList();
+
+      if (activeBagId === null) {
+        overviewSection.classList.remove('hidden');
+        detailSection.classList.add('hidden');
+        hamburgerBtn.classList.remove('hidden');
+        backToBagsBtn.classList.add('hidden');
+        headerTitle.innerText = appData.bags.length > 0 ? 'Bags' : 'Select a Bag';
+
+        renderWelcomeCard();
+        renderBagsGrid();
+      } else {
+        const activeBag = appData.bags.find(b => b.id === activeBagId);
+        if (!activeBag) {
+          activeBagId = null;
+          renderAppView();
+          return;
+        }
+
+        overviewSection.classList.add('hidden');
+        detailSection.classList.remove('hidden');
+        hamburgerBtn.classList.add('hidden');
+        backToBagsBtn.classList.remove('hidden');
+        backToBagsBtn.classList.add('flex');
+        headerTitle.innerText = activeBag.name;
+
+        renderBagDetail(activeBag);
+      }
+    }
+
+    /* Dynamic Welcome Card & Header Update */
+    function renderWelcomeCard() {
+      const titleEl = document.getElementById('welcomeTitle');
+      const descEl = document.getElementById('welcomeDescription');
+      const actionArea = document.getElementById('welcomeActionArea');
+
+      const hasBags = appData.bags.length > 0;
+      const mainBag = appData.bags.find(b => b.id === appData.mainBagId);
+
+      if (!hasBags) {
+        // Zero bags state
+        titleEl.innerText = "Welcome to fronts";
+        descEl.innerText = "Organize everything based on the bag it goes in";
+        actionArea.innerHTML = `
+          <button onclick="promptCreateBag()" class="btn-primary" style="width: 100%; max-width: 20rem;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create First Bag
+          </button>
+        `;
+      } else {
+        // Populated state (1 or more bags)
+        const totalItems = appData.bags.reduce((acc, b) => acc + (b.items ? b.items.length : 0), 0);
+        
+        titleEl.innerText = "Bags";
+        descEl.innerText = `You are tracking ${appData.bags.length} bag${appData.bags.length === 1 ? '' : 's'} with ${totalItems} item${totalItems === 1 ? '' : 's'}. ${mainBag ? `Your main bag: "${mainBag.name}".` : 'Select a main bag to prioritize tracking.'}`;
+        
+        actionArea.innerHTML = `
+          <button onclick="openSelectMainBagModal()" class="btn-gold" style="flex: 1;">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            ${mainBag ? 'Change Main Bag' : 'Select Main Bag'}
+          </button>
+        `;
+      }
+    }
+
+    function toggleMainBag(bagId) {
+      if (appData.mainBagId === bagId) {
+        appData.mainBagId = null;
+        showToast('Main bag priority cleared', 'info');
+      } else {
+        appData.mainBagId = bagId;
+        const bag = appData.bags.find(b => b.id === bagId);
+        showToast(`"${bag ? bag.name : 'Bag'}" set as Main Bag!`, 'success');
+      }
+      saveState();
+      renderAppView();
+    }
+
+    function openSelectMainBagModal() {
+      const listContainer = document.getElementById('mainBagSelectorList');
+      if (appData.bags.length === 0) {
+        listContainer.innerHTML = `<div style="font-size: 0.875rem; color: var(--text-muted); text-align: center; padding: 1rem;">No bags available yet.</div>`;
+      } else {
+        listContainer.innerHTML = appData.bags.map(bag => {
+          const isMain = appData.mainBagId === bag.id;
+          return `
+            <div onclick="toggleMainBag('${bag.id}'); closeModal('selectMainBagModal');" 
+                 style="padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid ${isMain ? 'var(--gold)' : 'var(--border-color)'}; background-color: ${isMain ? 'var(--gold-light)' : 'rgba(20, 20, 20, 0.6)'}; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+                <div style="width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background-color: var(--bg-surface); border: 1px solid var(--border-color); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  ${bag.icon ? `<img src="${bag.icon}" style="width: 100%; height: 100%; object-fit: cover;">` : `<span style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim);">BAG</span>`}
+                </div>
+                <div style="min-width: 0;">
+                  <h4 style="font-size: 0.875rem; font-weight: 600; color: #fff;" class="truncate">${escapeHtml(bag.name)}</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-muted);">${bag.items ? bag.items.length : 0} items</p>
+                </div>
+              </div>
+              <div>
+                ${isMain ? `<span class="badge-main">★ MAIN</span>` : `<span style="font-size: 0.75rem; color: var(--text-dim); text-decoration: underline;">Select</span>`}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      openModal('selectMainBagModal');
+    }
+
+    function openBagView(bagId) {
+      activeBagId = bagId;
+      toggleDrawer(false);
+      renderAppView();
+    }
+
+    function closeBagView() {
+      activeBagId = null;
+      renderAppView();
+    }
+
+    function renderDrawerBagsList() {
+      const container = document.getElementById('drawerBagsList');
+      if (appData.bags.length === 0) {
+        container.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-dim); text-align: center; padding: 1.5rem;">No bags added yet.</div>`;
+        return;
+      }
+
+      // Sort so Main Bag comes first in list
+      const sortedBags = [...appData.bags].sort((a, b) => {
+        if (a.id === appData.mainBagId) return -1;
+        if (b.id === appData.mainBagId) return 1;
+        return 0;
+      });
+
+      container.innerHTML = sortedBags.map(bag => {
+        const isMain = bag.id === appData.mainBagId;
+        const isActive = activeBagId === bag.id;
+        return `
+          <div style="padding: 0.625rem; border-radius: var(--radius-md); border: 1px solid ${isMain ? 'var(--gold)' : (isActive ? '#555' : 'var(--border-color)')}; background-color: ${isMain ? 'var(--gold-light)' : (isActive ? 'var(--bg-surface-hover)' : 'rgba(20, 20, 20, 0.6)')}; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s ease;">
+            <div onclick="openBagView('${bag.id}')" style="width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; background-color: var(--bg-surface); border: 1px solid var(--border-color); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;">
+              ${bag.icon ? `<img src="${bag.icon}" style="width: 100%; height: 100%; object-fit: cover;">` : `<span style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim);">BAG</span>`}
+            </div>
+            <div onclick="openBagView('${bag.id}')" style="flex: 1; min-width: 0; cursor: pointer;">
+              <div style="display: flex; align-items: center; gap: 0.25rem;">
+                ${isMain ? `<span style="color: var(--gold); font-weight: bold; font-size: 0.75rem;">★</span>` : ''}
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #fff;" class="truncate">${escapeHtml(bag.name)}</h4>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted);">${bag.items ? bag.items.length : 0} items</p>
+            </div>
+            <button onclick="toggleMainBag('${bag.id}')" class="star-btn ${isMain ? 'active' : ''}" title="${isMain ? 'Unset Main Bag' : 'Set as Main Bag'}">
+              <svg width="18" height="18" fill="${isMain ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+              </svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBagsGrid() {
+      const grid = document.getElementById('bagsGrid');
+      if (appData.bags.length === 0) {
+        grid.innerHTML = '';
+        return;
+      }
+
+      // Main Bag comes first in primary grid
+      const sortedBags = [...appData.bags].sort((a, b) => {
+        if (a.id === appData.mainBagId) return -1;
+        if (b.id === appData.mainBagId) return 1;
+        return 0;
+      });
+
+      grid.innerHTML = sortedBags.map(bag => {
+        const isMain = bag.id === appData.mainBagId;
+        return `
+          <div class="card ${isMain ? 'is-main-bag' : ''}" style="cursor: pointer;" onclick="openBagView('${bag.id}')">
+            ${isMain ? `<div style="position: absolute; top: 0.75rem; right: 0.75rem;"><span class="badge-main">★ MAIN BAG</span></div>` : ''}
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+              <div onclick="event.stopPropagation(); promptChangeThumbnail('bag', '${bag.id}')" class="thumbnail" title="Click to change bag thumbnail">
+                ${bag.icon ? `<img src="${bag.icon}">` : `<svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-dim);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>`}
+                <div class="thumbnail-overlay">Change</div>
+              </div>
+              <div style="min-width: 0; flex: 1; padding-right: ${isMain ? '4.5rem' : '0'};">
+                <h3 style="font-weight: 700; font-size: 1.125rem; color: #fff;" class="truncate">${escapeHtml(bag.name)}</h3>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">${bag.items ? bag.items.length : 0} registered items</p>
+              </div>
+            </div>
+            
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: var(--gold); font-weight: 500;">
+              <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <button onclick="event.stopPropagation(); toggleMainBag('${bag.id}')" class="star-btn ${isMain ? 'active' : ''}" title="${isMain ? 'Unset Main Bag' : 'Set as Main Bag'}">
+                  <svg width="16" height="16" fill="${isMain ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                  </svg>
+                </button>
+                <span style="color: ${isMain ? 'var(--gold)' : 'var(--text-muted)'};">${isMain ? 'Main Bag' : 'Set Main'}</span>
+              </div>
+              <span style="display: flex; align-items: center; gap: 0.25rem;">
+                Open Bag
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBagDetail(bag) {
+      const isMain = bag.id === appData.mainBagId;
+
+      document.getElementById('activeBagName').innerText = bag.name;
+      document.getElementById('activeBagItemCount').innerText = `${bag.items ? bag.items.length : 0} items inside`;
+
+      const mainBadge = document.getElementById('activeBagMainBadge');
+      if (isMain) {
+        mainBadge.classList.remove('hidden');
+      } else {
+        mainBadge.classList.add('hidden');
+      }
+
+      const setMainBtn = document.getElementById('setMainBagDetailBtn');
+      if (isMain) {
+        setMainBtn.innerHTML = '★ Main Bag (Unset)';
+        setMainBtn.style.backgroundColor = 'var(--gold-light)';
+        setMainBtn.style.color = 'var(--gold)';
+      } else {
+        setMainBtn.innerHTML = '☆ Set as Main Bag';
+        setMainBtn.style.backgroundColor = 'var(--bg-surface-hover)';
+        setMainBtn.style.color = 'var(--gold)';
+      }
+
+      const thumbBox = document.getElementById('activeBagThumbnailContainer');
+      if (bag.icon) {
+        thumbBox.innerHTML = `<img src="${bag.icon}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      } else {
+        thumbBox.innerHTML = `<svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-dim);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>`;
+      }
+
+      const grid = document.getElementById('itemsGrid');
+      if (!bag.items || bag.items.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 3rem 1rem; text-align: center; background-color: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-lg);">
+            <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-dim); margin: 0 auto 0.75rem auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+            <p style="color: var(--text-muted); font-size: 0.875rem; font-weight: 500;">This bag is empty right now.</p>
+            <button onclick="promptAddItem()" style="margin-top: 0.75rem; color: var(--gold); background: none; border: none; font-size: 0.75rem; font-weight: 600; text-decoration: underline; cursor: pointer;">Add your first item</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = bag.items.map(item => `
+        <div class="card space-y-3">
+          <div class="space-y-3">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div onclick="promptChangeThumbnail('item', '${item.id}', '${bag.id}')" class="thumbnail" style="width: 3.5rem; height: 3.5rem;" title="Click to change item thumbnail">
+                ${item.icon ? `<img src="${item.icon}">` : `<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-dim);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>`}
+                <div class="thumbnail-overlay">Change</div>
+              </div>
+              <div style="min-width: 0; flex: 1;">
+                <h4 style="font-weight: 700; color: #f5f5f3; font-size: 1rem;" class="truncate">${escapeHtml(item.name)}</h4>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Added gear item</p>
+              </div>
+              <button onclick="deleteItem('${item.id}')" class="icon-btn" style="color: var(--text-dim); padding: 0.25rem;" title="Delete Item">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+
+            <div class="space-y-1-5" style="padding-top: 0.25rem;">
+              ${(item.attributes || []).map((attr, idx) => `
+                <div style="background-color: var(--bg-darker); border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.375rem 0.625rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
+                  <span style="color: var(--text-muted); font-weight: 500;">${escapeHtml(attr.key)}:</span>
+                  <div style="display: flex; align-items: center; gap: 0.375rem; min-width: 0;">
+                    <span style="color: var(--gold); font-weight: 600;" class="truncate">${escapeHtml(attr.value)}</span>
+                    <button onclick="removeAttribute('${item.id}', ${idx})" style="background: none; border: none; color: var(--text-dim); cursor: pointer;">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <button onclick="promptAddAttribute('${item.id}')" class="btn-secondary" style="width: 100%; margin-top: 0.5rem; background-color: var(--bg-surface-hover); font-size: 0.75rem; padding: 0.375rem 0.75rem;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Attribute
+          </button>
+        </div>
+      `).join('');
+    }
+
+    /* Creation & Thumbnail Update Flow */
+    function promptCreateBag() {
+      pendingCreationMode = 'bag';
+      pendingThumbnailChange = null;
+      document.getElementById('choiceModalTitle').innerText = 'Add New Bag';
+      document.getElementById('nameInputWrapper').style.display = 'block';
+      document.getElementById('creationNameInput').value = '';
+      openModal('choiceModal');
+    }
+
+    function promptAddItem() {
+      if (!activeBagId) return;
+      pendingCreationMode = 'item';
+      pendingThumbnailChange = null;
+      document.getElementById('choiceModalTitle').innerText = 'Add Bag Item';
+      document.getElementById('nameInputWrapper').style.display = 'block';
+      document.getElementById('creationNameInput').value = '';
+      openModal('choiceModal');
+    }
+
+    function promptChangeThumbnail(targetType, targetId, bagId) {
+      pendingCreationMode = null;
+      pendingThumbnailChange = { type: targetType, id: targetId, bagId: bagId };
+      document.getElementById('choiceModalTitle').innerText = `Change ${targetType === 'bag' ? 'Bag' : 'Item'} Thumbnail`;
+      document.getElementById('nameInputWrapper').style.display = 'none';
+      openModal('choiceModal');
+    }
+
+    function selectChoiceOption(type) {
+      if (pendingCreationMode) {
+        const nameVal = document.getElementById('creationNameInput').value.trim();
+        if (!nameVal) {
+          showToast('Please enter a name first', 'error');
+          return;
+        }
+      }
+
+      if (type === 'camera') {
+        document.getElementById('cameraInput').click();
+      } else if (type === 'draw') {
+        closeModal('choiceModal');
+        resetCanvas();
+        openModal('doodleModal');
+      }
+    }
+
+    function handleImagePick(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        applyThumbnailOrCreationResult(evt.target.result);
+        e.target.value = '';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveCanvasDrawing() {
+      const dataUrl = canvas.toDataURL('image/png');
+      applyThumbnailOrCreationResult(dataUrl);
+    }
+
+    function applyThumbnailOrCreationResult(iconDataUrl) {
+      if (pendingThumbnailChange) {
+        const { type, id, bagId } = pendingThumbnailChange;
+        if (type === 'bag') {
+          const bag = appData.bags.find(b => b.id === id);
+          if (bag) {
+            bag.icon = iconDataUrl;
+            saveState();
+            showToast('Bag thumbnail updated!', 'success');
+          }
+        } else if (type === 'item') {
+          const bag = appData.bags.find(b => b.id === (bagId || activeBagId));
+          if (bag && bag.items) {
+            const item = bag.items.find(i => i.id === id);
+            if (item) {
+              item.icon = iconDataUrl;
+              saveState();
+              showToast('Item thumbnail updated!', 'success');
+            }
+          }
+        }
+        pendingThumbnailChange = null;
+        closeModal('choiceModal');
+        closeModal('doodleModal');
+        renderAppView();
+        return;
+      }
+
+      const nameVal = document.getElementById('creationNameInput').value.trim() || 'Untitled';
+
+      if (pendingCreationMode === 'bag') {
+        const newBag = {
+          id: 'bag_' + Date.now(),
+          name: nameVal,
+          icon: iconDataUrl,
+          items: []
+        };
+        appData.bags.push(newBag);
+        
+        // Auto-set as main bag if it's the first bag created
+        if (appData.bags.length === 1) {
+          appData.mainBagId = newBag.id;
+        }
+
+        saveState();
+        showToast('New bag added!', 'success');
+        closeModal('choiceModal');
+        closeModal('doodleModal');
+        openBagView(newBag.id);
+      } else if (pendingCreationMode === 'item') {
+        const bag = appData.bags.find(b => b.id === activeBagId);
+        if (bag) {
+          const newItem = {
+            id: 'item_' + Date.now(),
+            name: nameVal,
+            icon: iconDataUrl,
+            attributes: []
+          };
+          if (!bag.items) bag.items = [];
+          bag.items.push(newItem);
+          saveState();
+          showToast('Item added to bag!', 'success');
+        }
+        closeModal('choiceModal');
+        closeModal('doodleModal');
+        renderAppView();
+      }
+      pendingCreationMode = null;
+    }
+
+    /* Drawing Canvas Implementation */
+    function initCanvas() {
+      canvas = document.getElementById('doodleCanvas');
+      ctx = canvas.getContext('2d');
+
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseleave', stopDrawing);
+
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', () => {
+        const mouseEvent = new MouseEvent('mouseup', {});
+        canvas.dispatchEvent(mouseEvent);
+      });
+
+      resetCanvas();
+    }
+
+    function renderPalette() {
+      const container = document.getElementById('paletteContainer');
+      container.innerHTML = PALETTE_COLORS.map(color => `
+        <button onclick="setColor('${color}')" style="width: 2rem; height: 2rem; border-radius: 50%; border: 2px solid ${currentColor === color ? '#fff' : 'var(--border-color)'}; background-color: ${color}; cursor: pointer; transition: transform 0.2s ease; transform: scale(${currentColor === color ? '1.1' : '1'}); box-shadow: ${currentColor === color ? '0 0 0 2px var(--gold)' : 'none'};">
+        </button>
+      `).join('');
+    }
+
+    function setColor(color) {
+      currentColor = color;
+      renderPalette();
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      ctx.beginPath();
+      ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const strokeSize = document.getElementById('brushSize').value;
+
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = strokeSize;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      if (isDrawing) {
+        ctx.closePath();
+        isDrawing = false;
+      }
+    }
+
+    function resetCanvas() {
+      if (!ctx) return;
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    /* Attributes & Deletion Logic */
+    function promptAddAttribute(itemId) {
+      targetItemIdForAttr = itemId;
+      document.getElementById('attrKeyInput').value = '';
+      document.getElementById('attrValInput').value = '';
+      openModal('attributeModal');
+    }
+
+    function saveAttribute() {
+      const key = document.getElementById('attrKeyInput').value.trim();
+      const val = document.getElementById('attrValInput').value.trim();
+
+      if (!key || !val) {
+        showToast('Enter both key and value', 'error');
+        return;
+      }
+
+      const bag = appData.bags.find(b => b.id === activeBagId);
+      if (bag) {
+        const item = bag.items.find(i => i.id === targetItemIdForAttr);
+        if (item) {
+          if (!item.attributes) item.attributes = [];
+          item.attributes.push({ key, value: val });
+          saveState();
+          showToast('Attribute added', 'success');
+          renderAppView();
+        }
+      }
+      closeModal('attributeModal');
+    }
+
+    function removeAttribute(itemId, index) {
+      const bag = appData.bags.find(b => b.id === activeBagId);
+      if (bag) {
+        const item = bag.items.find(i => i.id === itemId);
+        if (item && item.attributes) {
+          item.attributes.splice(index, 1);
+          saveState();
+          renderAppView();
+        }
+      }
+    }
+
+    function deleteItem(itemId) {
+      const bag = appData.bags.find(b => b.id === activeBagId);
+      if (bag && bag.items) {
+        bag.items = bag.items.filter(i => i.id !== itemId);
+        saveState();
+        showToast('Item deleted', 'info');
+        renderAppView();
+      }
+    }
+
+    function deleteCurrentBag() {
+      if (!activeBagId) return;
+      if (appData.mainBagId === activeBagId) {
+        appData.mainBagId = null;
+      }
+      appData.bags = appData.bags.filter(b => b.id !== activeBagId);
+      saveState();
+      activeBagId = null;
+      showToast('Bag deleted', 'info');
+      renderAppView();
+    }
+
+    function deleteAllData() {
+      appData = { bags: [], mainBagId: null };
+      saveState();
+      activeBagId = null;
+      toggleDrawer(false);
+      showToast('All data cleared', 'info');
+      renderAppView();
+    }
+
+    /* Import / Export Flow (Dual Web + Android Bridge Support) */
+    function exportBags() {
+      const jsonStr = JSON.stringify(appData, null, 2);
+
+      // Trigger native Android MediaStore interface if running inside WebView APK wrapper
+      if (window.AndroidBridge && typeof window.AndroidBridge.exportData === 'function') {
+        window.AndroidBridge.exportData(jsonStr);
+        showToast('Saving to Downloads...', 'info');
+        return;
+      }
+
+      // Web Browser standard blob download fallback
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fronts_export_${new Date().toISOString().slice(0,10)}.mybags`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast('Exported .mybags package!', 'success');
+    }
+
+    function triggerImport() {
+      document.getElementById('importFileInput').click();
+    }
+
+    function handleImportFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const importedData = JSON.parse(evt.target.result);
+          if (importedData && Array.isArray(importedData.bags)) {
+            appData = importedData;
+            if (appData.mainBagId === undefined) appData.mainBagId = null;
+            saveState();
+            activeBagId = null;
+            toggleDrawer(false);
+            renderAppView();
+            showToast('Successfully imported .mybags!', 'success');
+          } else {
+            showToast('Invalid .mybags file format', 'error');
+          }
+        } catch (err) {
+          showToast('Failed to parse file', 'error');
+        }
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    /* Utilities */
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMsg.innerText = msg;
+
+      if (type === 'success') {
+        toastIcon.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #5cb85c;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+      } else if (type === 'error') {
+        toastIcon.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #d9534f;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+      } else {
+        toastIcon.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--gold);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+      }
+
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+  </script>
+</body>
+</html>

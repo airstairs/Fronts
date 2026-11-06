@@ -1,0 +1,80 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml",
+      "selection": {
+        "end": {
+          "column": 36,
+          "index": 449,
+          "line": 10
+        },
+        "start": {
+          "column": 36,
+          "index": 449,
+          "line": 10
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/res/values/strings.xml",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/res/layout/activity_main.xml",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 595,
+          "line": 15
+        },
+        "start": {
+          "column": 0,
+          "index": 595,
+          "line": 15
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/kotlin/com/xthan/fronts/MainActivity.kt",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 5263,
+          "line": 125
+        },
+        "start": {
+          "column": 0,
+          "index": 5263,
+          "line": 125
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/assets/index.html",
+      "selection": {
+        "end": {
+          "column": 140,
+          "index": 17401,
+          "line": 625
+        },
+        "start": {
+          "column": 140,
+          "index": 17401,
+          "line": 625
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/kotlin/com/xthan/fronts/MainActivity.kt"
+}
