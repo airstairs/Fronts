@@ -52,19 +52,15 @@ MERGED from [androidx.core:core-viewtree:1.0.0] /data/user/0/com.tom.rv2ide/file
 		INJECTED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:2:11-69
-uses-permission#android.permission.INTERNET
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:4:5-67
-	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:4:22-64
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:5:5-107
+ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:4:5-107
 	android:maxSdkVersion
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:5:78-104
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:4:78-104
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:5:22-77
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:4:22-77
 application
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:7:5-24:19
-INJECTED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:7:5-24:19
+ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:6:5-24:19
+INJECTED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:6:5-24:19
 MERGED from [com.google.android.material:material:1.13.0] /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/9.0.0/transforms/a8aad1d12255982d7dcd6965a6b96acf/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.13.0] /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/9.0.0/transforms/a8aad1d12255982d7dcd6965a6b96acf/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/9.0.0/transforms/82b12c1a216e3bc67094035f89f80ec5/transformed/constraintlayout-2.2.1/AndroidManifest.xml:7:5-20
@@ -86,35 +82,35 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /data/user/
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.17.0] /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/9.0.0/transforms/364a2247c064f678d92175a50b54c0f0/transformed/core-1.17.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:12:9-35
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:11:9-35
 	android:label
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:10:9-31
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:9:9-31
 	android:roundIcon
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:11:9-50
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:10:9-50
 	android:icon
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:9:9-45
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:8:9-45
 	android:allowBackup
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:8:9-35
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:7:9-35
 	android:theme
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:13:9-68
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:12:9-68
 activity#com.xthan.fronts.MainActivity
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:15:9-23:20
-	android:screenOrientation
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:18:13-49
+ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:14:9-22:12
 	android:exported
 		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:17:13-36
+	android:configChanges
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:16:13-106
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:16:13-41
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:15:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:19:13-22:29
+ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:18:5-21:21
 action#android.intent.action.MAIN
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:20:17-69
+ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:19:9-61
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:20:25-66
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:19:17-58
 category#android.intent.category.LAUNCHER
-ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:21:17-77
+ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:20:9-69
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:21:27-74
+		ADDED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:20:19-66
 uses-sdk
 INJECTED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml

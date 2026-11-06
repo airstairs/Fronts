@@ -840,16 +840,29 @@
 
     window.addEventListener('load', () => {
       loadState();
+      
+      // RESTORE active bag view state if rotation / reload occurred
+      const savedActiveBag = sessionStorage.getItem('fronts_active_bag');
+      if (savedActiveBag && appData.bags.some(b => b.id === savedActiveBag)) {
+        activeBagId = savedActiveBag;
+      }
+
       initCanvas();
       renderPalette();
       renderAppView();
+    });
+
+    // Save state on visibility change / orientation shifts or page unloads to prevent data loss
+    window.addEventListener('pagehide', saveState);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') saveState();
     });
 
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       } catch (e) {
-        showToast('Storage space exceeded or unavailable.', 'error');
+        showToast('Storage quota exceeded! Try compressing or removing an image.', 'error');
       }
     }
 
@@ -906,6 +919,7 @@
         const activeBag = appData.bags.find(b => b.id === activeBagId);
         if (!activeBag) {
           activeBagId = null;
+          sessionStorage.removeItem('fronts_active_bag');
           renderAppView();
           return;
         }
@@ -931,7 +945,6 @@
       const mainBag = appData.bags.find(b => b.id === appData.mainBagId);
 
       if (!hasBags) {
-        // Zero bags state
         titleEl.innerText = "Welcome to fronts";
         descEl.innerText = "Organize everything based on the bag it goes in";
         actionArea.innerHTML = `
@@ -943,7 +956,6 @@
           </button>
         `;
       } else {
-        // Populated state (1 or more bags)
         const totalItems = appData.bags.reduce((acc, b) => acc + (b.items ? b.items.length : 0), 0);
         
         titleEl.innerText = "Bags";
@@ -1004,12 +1016,14 @@
 
     function openBagView(bagId) {
       activeBagId = bagId;
+      sessionStorage.setItem('fronts_active_bag', bagId); // PERSIST state
       toggleDrawer(false);
       renderAppView();
     }
 
     function closeBagView() {
       activeBagId = null;
+      sessionStorage.removeItem('fronts_active_bag'); // CLEAR state
       renderAppView();
     }
 
@@ -1020,7 +1034,6 @@
         return;
       }
 
-      // Sort so Main Bag comes first in list
       const sortedBags = [...appData.bags].sort((a, b) => {
         if (a.id === appData.mainBagId) return -1;
         if (b.id === appData.mainBagId) return 1;
@@ -1059,7 +1072,6 @@
         return;
       }
 
-      // Main Bag comes first in primary grid
       const sortedBags = [...appData.bags].sort((a, b) => {
         if (a.id === appData.mainBagId) return -1;
         if (b.id === appData.mainBagId) return 1;
@@ -1236,14 +1248,49 @@
 
       const reader = new FileReader();
       reader.onload = function(evt) {
-        applyThumbnailOrCreationResult(evt.target.result);
+        const img = new Image();
+        img.onload = function() {
+          const MAX_DIM = 400;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_DIM) {
+              height *= MAX_DIM / width;
+              width = MAX_DIM;
+            }
+          } else {
+            if (height > MAX_DIM) {
+              width *= MAX_DIM / height;
+              height = MAX_DIM;
+            }
+          }
+
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = width;
+          tempCanvas.height = height;
+          const tCtx = tempCanvas.getContext('2d');
+          tCtx.drawImage(img, 0, 0, width, height);
+
+          const compressedDataUrl = tempCanvas.toDataURL('image/jpeg', 0.7);
+          applyThumbnailOrCreationResult(compressedDataUrl);
+        };
+        img.src = evt.target.result;
         e.target.value = '';
       };
       reader.readAsDataURL(file);
     }
 
     function saveCanvasDrawing() {
-      const dataUrl = canvas.toDataURL('image/png');
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 300;
+      tempCanvas.height = 300;
+      const tCtx = tempCanvas.getContext('2d');
+      tCtx.fillStyle = '#0a0a0a';
+      tCtx.fillRect(0, 0, 300, 300);
+      tCtx.drawImage(canvas, 0, 0);
+
+      const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.75);
       applyThumbnailOrCreationResult(dataUrl);
     }
 
@@ -1286,7 +1333,6 @@
         };
         appData.bags.push(newBag);
         
-        // Auto-set as main bag if it's the first bag created
         if (appData.bags.length === 1) {
           appData.mainBagId = newBag.id;
         }
@@ -1468,6 +1514,7 @@
       appData.bags = appData.bags.filter(b => b.id !== activeBagId);
       saveState();
       activeBagId = null;
+      sessionStorage.removeItem('fronts_active_bag');
       showToast('Bag deleted', 'info');
       renderAppView();
     }
@@ -1476,23 +1523,22 @@
       appData = { bags: [], mainBagId: null };
       saveState();
       activeBagId = null;
+      sessionStorage.removeItem('fronts_active_bag');
       toggleDrawer(false);
       showToast('All data cleared', 'info');
       renderAppView();
     }
 
-    /* Import / Export Flow (Dual Web + Android Bridge Support) */
+    /* Import / Export Flow */
     function exportBags() {
       const jsonStr = JSON.stringify(appData, null, 2);
 
-      // Trigger native Android MediaStore interface if running inside WebView APK wrapper
       if (window.AndroidBridge && typeof window.AndroidBridge.exportData === 'function') {
         window.AndroidBridge.exportData(jsonStr);
         showToast('Saving to Downloads...', 'info');
         return;
       }
 
-      // Web Browser standard blob download fallback
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -1523,6 +1569,7 @@
             if (appData.mainBagId === undefined) appData.mainBagId = null;
             saveState();
             activeBagId = null;
+            sessionStorage.removeItem('fronts_active_bag');
             toggleDrawer(false);
             renderAppView();
             showToast('Successfully imported .mybags!', 'success');

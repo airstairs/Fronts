@@ -1,80 +1,35 @@
 {
   "allFiles": [
     {
-      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml",
-      "selection": {
-        "end": {
-          "column": 48,
-          "index": 719,
-          "line": 17
-        },
-        "start": {
-          "column": 48,
-          "index": 719,
-          "line": 17
-        }
-      }
-    },
-    {
-      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/res/values/strings.xml",
-      "selection": {
-        "end": {
-          "column": 0,
-          "index": 0,
-          "line": 0
-        },
-        "start": {
-          "column": 0,
-          "index": 0,
-          "line": 0
-        }
-      }
-    },
-    {
-      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/res/layout/activity_main.xml",
-      "selection": {
-        "end": {
-          "column": 0,
-          "index": 595,
-          "line": 15
-        },
-        "start": {
-          "column": 0,
-          "index": 595,
-          "line": 15
-        }
-      }
-    },
-    {
-      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/kotlin/com/xthan/fronts/MainActivity.kt",
-      "selection": {
-        "end": {
-          "column": 0,
-          "index": 5263,
-          "line": 125
-        },
-        "start": {
-          "column": 0,
-          "index": 5263,
-          "line": 125
-        }
-      }
-    },
-    {
       "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/assets/index.html",
       "selection": {
         "end": {
-          "column": 140,
-          "index": 17401,
-          "line": 625
+          "column": 0,
+          "index": 64264,
+          "line": 1623
         },
         "start": {
-          "column": 140,
-          "index": 17401,
-          "line": 625
+          "column": 0,
+          "index": 64264,
+          "line": 1623
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 109,
+          "line": 2
+        },
+        "start": {
+          "column": 0,
+          "index": 109,
+          "line": 2
         }
       }
     }
   ],
-  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/assets/index.html"
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml"
 }
