@@ -1,17 +1,17 @@
 {
   "allFiles": [
     {
-      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/assets/index.html",
+      "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/res/values/strings.xml",
       "selection": {
         "end": {
-          "column": 0,
-          "index": 64264,
-          "line": 1623
+          "column": 30,
+          "index": 42,
+          "line": 1
         },
         "start": {
-          "column": 0,
-          "index": 64264,
-          "line": 1623
+          "column": 30,
+          "index": 42,
+          "line": 1
         }
       }
     },
@@ -19,14 +19,14 @@
       "file": "/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml",
       "selection": {
         "end": {
-          "column": 0,
-          "index": 109,
-          "line": 2
+          "column": 24,
+          "index": 339,
+          "line": 8
         },
         "start": {
-          "column": 0,
-          "index": 109,
-          "line": 2
+          "column": 24,
+          "index": 339,
+          "line": 8
         }
       }
     }

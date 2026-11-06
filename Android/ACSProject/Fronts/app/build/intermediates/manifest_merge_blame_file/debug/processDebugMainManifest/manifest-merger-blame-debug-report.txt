@@ -36,7 +36,7 @@
 25        android:extractNativeLibs="true"
 26        android:icon="@drawable/ic_launcher"
 26-->/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:8:9-45
-27        android:label="Fronts"
+27        android:label="fronts"
 27-->/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:9:9-31
 28        android:roundIcon="@drawable/ic_launcher"
 28-->/storage/emulated/0/AndroidIDEProjects/Fronts/app/src/main/AndroidManifest.xml:10:9-50
